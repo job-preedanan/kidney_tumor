@@ -9,7 +9,9 @@ from myMulmoUnet import MulmoUNet
 from loss_function import recall, precision, dice_coef, dice_loss, focal_tv_loss
 
 
-PATH = 'C:/Users/Job/Documents/DoctorProject/kidney_tumor/'
+PATH = '/kw_resource'
+DATA_FOLDER = '/datasets/kidney_tumor'
+EXPORT_FOLDER = '/exports/mulmo_unet_v1'
 IMAGE_SIZE = 256
 BATCH_SIZE = 8
 EPOCH = 300
@@ -137,7 +139,7 @@ def train(xy_train, xy_val):
                                                               min_lr=5e-5)
 
     # model checkpoint
-    model_checkpoint_callback = tf.keras.callbacks.ModelCheckpoint(filepath=PATH + 'weight_checkpoint.hdf5',
+    model_checkpoint_callback = tf.keras.callbacks.ModelCheckpoint(filepath=PATH + '/weight_checkpoint.hdf5',
                                                                    save_weights_only=True,
                                                                    monitor='val_loss',
                                                                    mode='min',
@@ -150,8 +152,8 @@ def train(xy_train, xy_val):
                         callbacks=[lr_reduce_callback, model_checkpoint_callback],
                         validation_data=([x_val1, x_val2, x_val3], y_val))
 
-    model.save_weights(PATH + 'mulmounet_weights.hdf5')
-    utils.plot_summary_graph(history, PATH + 'test')
+    model.save_weights(PATH + EXPORT_FOLDER + '/mulmounet_weights.hdf5')
+    utils.plot_summary_graph(history, PATH + EXPORT_FOLDER)
 
 
 def predict(xy_test):
@@ -193,7 +195,7 @@ def predict(xy_test):
     # load U-Net network with trained weights
     network = MulmoUNet(1, 1, 32)
     model = network.get_model()
-    model.load_weights(PATH + 'mulmounet_weights.hdf5')
+    model.load_weights(PATH + EXPORT_FOLDER + '/mulmounet_weights.hdf5')
 
     # predict
     y_preds = model.predict([x_test1, x_test2, x_test3], batch_size=BATCH_SIZE)
@@ -203,7 +205,7 @@ def predict(xy_test):
     precision = []
     f1_score = []
     try:
-        os.makedirs('test2/save_results/')
+        os.makedirs(PATH + EXPORT_FOLDER + '/test_images')
     except(FileExistsError):
         print('folders exist')
 
@@ -217,7 +219,7 @@ def predict(xy_test):
         y_true_heatmap = utils.convert_to_heatmap(org_image, y_true)
         y_pred_heatmap = utils.convert_to_heatmap(org_image, y_pred)
         save_image = np.concatenate((y_true_heatmap, y_pred_heatmap), axis=1)
-        cv2.imwrite('test2/save_results/' + str(i) + '.png', save_image)
+        cv2.imwrite(PATH + EXPORT_FOLDER + '/test_images/' + str(i) + '.png', save_image)
 
         # pixel-based
         tp, fn, fp = pixelbased_metric(y_true, y_pred, binary_th=0.5)
@@ -239,20 +241,20 @@ if __name__ == '__main__':
 
     # modal = ['pc/', 'ec/', 'dc/']  # 'pc/', 'ec/', 'dc/', 'tm/', 'am/'
 
-    x0_data1, _ = load_data_from_folder('dataset/AML/', modal_lists=['pc/'], image_type=1)
-    y0_data1, _ = load_data_from_folder('dataset/AML/', modal_lists=['pc/'], image_type=0)
-    x1_data1, _ = load_data_from_folder('dataset/CCRCC/', modal_lists=['pc/'], image_type=1)
-    y1_data1, _ = load_data_from_folder('dataset/CCRCC/', modal_lists=['pc/'], image_type=0)
+    x0_data1, _ = load_data_from_folder(DATA_FOLDER + '/AML/', modal_lists=['pc/'], image_type=1)
+    y0_data1, _ = load_data_from_folder(DATA_FOLDER + '/AML/', modal_lists=['pc/'], image_type=0)
+    x1_data1, _ = load_data_from_folder(DATA_FOLDER + '/CCRCC/', modal_lists=['pc/'], image_type=1)
+    y1_data1, _ = load_data_from_folder(DATA_FOLDER + '/CCRCC/', modal_lists=['pc/'], image_type=0)
 
-    x0_data2, _ = load_data_from_folder('dataset/AML/', modal_lists=['ec/'], image_type=1)
-    y0_data2, _ = load_data_from_folder('dataset/AML/', modal_lists=['ec/'], image_type=0)
-    x1_data2, _ = load_data_from_folder('dataset/CCRCC/', modal_lists=['ec/'], image_type=1)
-    y1_data2, _ = load_data_from_folder('dataset/CCRCC/', modal_lists=['ec/'], image_type=0)
+    x0_data2, _ = load_data_from_folder(DATA_FOLDER + '/AML/', modal_lists=['ec/'], image_type=1)
+    y0_data2, _ = load_data_from_folder(DATA_FOLDER + '/AML/', modal_lists=['ec/'], image_type=0)
+    x1_data2, _ = load_data_from_folder(DATA_FOLDER + '/CCRCC/', modal_lists=['ec/'], image_type=1)
+    y1_data2, _ = load_data_from_folder(DATA_FOLDER + '/CCRCC/', modal_lists=['ec/'], image_type=0)
 
-    x0_data3, _ = load_data_from_folder('dataset/AML/', modal_lists=['dc/'], image_type=1)
-    y0_data3, _ = load_data_from_folder('dataset/AML/', modal_lists=['dc/'], image_type=0)
-    x1_data3, _ = load_data_from_folder('dataset/CCRCC/', modal_lists=['dc/'], image_type=1)
-    y1_data3, _ = load_data_from_folder('dataset/CCRCC/', modal_lists=['dc/'], image_type=0)
+    x0_data3, _ = load_data_from_folder(DATA_FOLDER + '/AML/', modal_lists=['dc/'], image_type=1)
+    y0_data3, _ = load_data_from_folder(DATA_FOLDER + '/AML/', modal_lists=['dc/'], image_type=0)
+    x1_data3, _ = load_data_from_folder(DATA_FOLDER + '/CCRCC/', modal_lists=['dc/'], image_type=1)
+    y1_data3, _ = load_data_from_folder(DATA_FOLDER + '/CCRCC/', modal_lists=['dc/'], image_type=0)
 
     clahe = cv2.createCLAHE(clipLimit=2.0, tileGridSize=(8, 8))
 
@@ -268,7 +270,7 @@ if __name__ == '__main__':
     axarr[2, 0].imshow(utils.denormalize_y(y0_data1[idx]), cmap='gray', vmin=0, vmax=255)
     axarr[2, 1].imshow(utils.denormalize_y(y0_data2[idx]), cmap='gray', vmin=0, vmax=255)
     axarr[2, 2].imshow(utils.denormalize_y(y0_data3[idx]), cmap='gray', vmin=0, vmax=255)
-    plt.show()
+    # plt.show()
 
     x_data = np.concatenate(([np.concatenate([x0_data1, x1_data1]),
                               np.concatenate([x0_data2, x1_data2]),
