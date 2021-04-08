@@ -9,8 +9,8 @@ from myMulmoUnet import MulmoUNet
 from loss_function import recall, precision, dice_coef, dice_loss, focal_tv_loss
 
 
-PATH = '/kw_resource'
-DATA_FOLDER = '/datasets/kidney_tumor'
+PATH = '/kw_resource/kidney_tumor'
+DATA_FOLDER = '/dataset'
 EXPORT_FOLDER = '/exports/mulmo_unet_v1'
 IMAGE_SIZE = 256
 BATCH_SIZE = 8
@@ -241,20 +241,20 @@ if __name__ == '__main__':
 
     # modal = ['pc/', 'ec/', 'dc/']  # 'pc/', 'ec/', 'dc/', 'tm/', 'am/'
 
-    x0_data1, _ = load_data_from_folder(DATA_FOLDER + '/AML/', modal_lists=['pc/'], image_type=1)
-    y0_data1, _ = load_data_from_folder(DATA_FOLDER + '/AML/', modal_lists=['pc/'], image_type=0)
-    x1_data1, _ = load_data_from_folder(DATA_FOLDER + '/CCRCC/', modal_lists=['pc/'], image_type=1)
-    y1_data1, _ = load_data_from_folder(DATA_FOLDER + '/CCRCC/', modal_lists=['pc/'], image_type=0)
+    x0_data1, _ = load_data_from_folder(PATH + DATA_FOLDER + '/AML/', modal_lists=['pc/'], image_type=1)
+    y0_data1, _ = load_data_from_folder(PATH + DATA_FOLDER + '/AML/', modal_lists=['pc/'], image_type=0)
+    x1_data1, _ = load_data_from_folder(PATH + DATA_FOLDER + '/CCRCC/', modal_lists=['pc/'], image_type=1)
+    y1_data1, _ = load_data_from_folder(PATH + DATA_FOLDER + '/CCRCC/', modal_lists=['pc/'], image_type=0)
 
-    x0_data2, _ = load_data_from_folder(DATA_FOLDER + '/AML/', modal_lists=['ec/'], image_type=1)
-    y0_data2, _ = load_data_from_folder(DATA_FOLDER + '/AML/', modal_lists=['ec/'], image_type=0)
-    x1_data2, _ = load_data_from_folder(DATA_FOLDER + '/CCRCC/', modal_lists=['ec/'], image_type=1)
-    y1_data2, _ = load_data_from_folder(DATA_FOLDER + '/CCRCC/', modal_lists=['ec/'], image_type=0)
+    x0_data2, _ = load_data_from_folder(PATH + DATA_FOLDER + '/AML/', modal_lists=['ec/'], image_type=1)
+    y0_data2, _ = load_data_from_folder(PATH + DATA_FOLDER + '/AML/', modal_lists=['ec/'], image_type=0)
+    x1_data2, _ = load_data_from_folder(PATH + DATA_FOLDER + '/CCRCC/', modal_lists=['ec/'], image_type=1)
+    y1_data2, _ = load_data_from_folder(PATH + DATA_FOLDER + '/CCRCC/', modal_lists=['ec/'], image_type=0)
 
-    x0_data3, _ = load_data_from_folder(DATA_FOLDER + '/AML/', modal_lists=['dc/'], image_type=1)
-    y0_data3, _ = load_data_from_folder(DATA_FOLDER + '/AML/', modal_lists=['dc/'], image_type=0)
-    x1_data3, _ = load_data_from_folder(DATA_FOLDER + '/CCRCC/', modal_lists=['dc/'], image_type=1)
-    y1_data3, _ = load_data_from_folder(DATA_FOLDER + '/CCRCC/', modal_lists=['dc/'], image_type=0)
+    x0_data3, _ = load_data_from_folder(PATH + DATA_FOLDER + '/AML/', modal_lists=['dc/'], image_type=1)
+    y0_data3, _ = load_data_from_folder(PATH + DATA_FOLDER + '/AML/', modal_lists=['dc/'], image_type=0)
+    x1_data3, _ = load_data_from_folder(PATH + DATA_FOLDER + '/CCRCC/', modal_lists=['dc/'], image_type=1)
+    y1_data3, _ = load_data_from_folder(PATH + DATA_FOLDER + '/CCRCC/', modal_lists=['dc/'], image_type=0)
 
     clahe = cv2.createCLAHE(clipLimit=2.0, tileGridSize=(8, 8))
 
